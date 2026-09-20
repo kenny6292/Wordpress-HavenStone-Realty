@@ -13,9 +13,15 @@ function havenstone_save_agent_meta(int $post_id): void {
 }
 add_action('save_post_agent','havenstone_save_agent_meta');
 
+function havenstone_agent_whatsapp_url(string $value): string {
+ $value=trim($value); if(!$value)return '';
+ if(filter_var($value,FILTER_VALIDATE_URL))return esc_url_raw($value);
+ $digits=preg_replace('/[^0-9]/','',$value); return $digits ? 'https://wa.me/'.$digits : '';
+}
+
 function havenstone_agent_shortcode(array $atts=[]): string {
  $q=new WP_Query(['post_type'=>'agent','post_status'=>'publish','posts_per_page'=>12]);ob_start();echo '<div class="agent-grid">';
- while($q->have_posts()){$q->the_post();$id=get_the_ID();$role=get_post_meta($id,'_havenstone_role',true);$phone=get_post_meta($id,'_havenstone_phone',true);$wa=get_post_meta($id,'_havenstone_whatsapp',true);echo '<article class="agent-card">';if(has_post_thumbnail())echo get_the_post_thumbnail('','medium',['loading'=>'lazy']);echo '<h3><a href="'.esc_url(get_permalink()).'">'.esc_html(get_the_title()).'</a></h3>';if($role)echo '<p>'.esc_html($role).'</p>';if($phone)echo '<a href="tel:'.esc_attr($phone).'">Call</a> ';if($wa)echo '<a href="'.esc_url($wa).'" target="_blank" rel="noopener">WhatsApp</a>';echo '</article>';}
+ while($q->have_posts()){$q->the_post();$id=get_the_ID();$role=get_post_meta($id,'_havenstone_role',true);$phone=get_post_meta($id,'_havenstone_phone',true);$wa=get_post_meta($id,'_havenstone_whatsapp',true);echo '<article class="agent-card">';if(has_post_thumbnail())echo get_the_post_thumbnail('','medium',['loading'=>'lazy']);echo '<h3><a href="'.esc_url(get_permalink()).'">'.esc_html(get_the_title()).'</a></h3>';if($role)echo '<p>'.esc_html($role).'</p>';if($phone)echo '<a href="tel:'.esc_attr($phone).'">Call</a> ';$wa_url=havenstone_agent_whatsapp_url($wa);if($wa_url)echo '<a href="'.esc_url($wa_url).'" target="_blank" rel="noopener">WhatsApp</a>';echo '</article>';}
  wp_reset_postdata();echo '</div>';return (string)ob_get_clean();
 }
 add_shortcode('havenstone_agents','havenstone_agent_shortcode');
