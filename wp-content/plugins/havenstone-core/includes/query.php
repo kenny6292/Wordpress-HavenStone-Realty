@@ -41,7 +41,7 @@ function havenstone_property_query(array $args = []): WP_Query {
         if (!empty($_GET['min_price'])) {
             $meta_query[] = [
                 'key' => '_havenstone_price',
-                'value' => (float) sanitize_text_field(wp_unslash($_GET['min_price'])),
+                'value' => (float) preg_replace('/[^0-9.]/', '', wp_unslash($_GET['min_price'])),
                 'type' => 'NUMERIC',
                 'compare' => '>=',
             ];
@@ -49,7 +49,7 @@ function havenstone_property_query(array $args = []): WP_Query {
         if (!empty($_GET['max_price'])) {
             $meta_query[] = [
                 'key' => '_havenstone_price',
-                'value' => (float) sanitize_text_field(wp_unslash($_GET['max_price'])),
+                'value' => (float) preg_replace('/[^0-9.]/', '', wp_unslash($_GET['max_price'])),
                 'type' => 'NUMERIC',
                 'compare' => '<=',
             ];
@@ -64,7 +64,6 @@ function havenstone_property_query(array $args = []): WP_Query {
         }
     }
 
-    $allowed_orderby = ['date','title','meta_value_num'];
     $sort = isset($_GET['sort']) ? sanitize_key(wp_unslash($_GET['sort'])) : 'date';
     if ($sort === 'price_low') { $args['meta_key']='_havenstone_price'; $args['orderby']='meta_value_num'; $args['order']='ASC'; }
     elseif ($sort === 'price_high') { $args['meta_key']='_havenstone_price'; $args['orderby']='meta_value_num'; $args['order']='DESC'; }
