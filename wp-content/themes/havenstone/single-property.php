@@ -23,6 +23,20 @@ while (have_posts()) :
     $type = (!is_wp_error($type_terms) && $type_terms) ? $type_terms[0]->name : '';
     $location = (!is_wp_error($location_terms) && $location_terms) ? $location_terms[0]->name : '';
     ?>
+<?php
+    $schema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'RealEstateListing',
+        'name' => get_the_title(),
+        'url' => get_permalink(),
+        'description' => wp_strip_all_tags(get_the_excerpt()),
+    ];
+    if ($price) $schema['offers'] = ['@type' => 'Offer', 'price' => preg_replace('/[^0-9.]/', '', (string) get_post_meta($id, '_havenstone_price', true)), 'priceCurrency' => 'NGN'];
+    if ($address) $schema['address'] = ['@type' => 'PostalAddress', 'streetAddress' => $address];
+    if ($beds !== '') $schema['numberOfRooms'] = (int) $beds;
+    if (has_post_thumbnail()) $schema['image'] = get_the_post_thumbnail_url($id, 'full');
+    echo '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . '</script>';
+?>
     <main class="property-single site-container section">
         <a class="back-link" href="<?php echo esc_url(get_post_type_archive_link('property')); ?>">← All properties</a>
 
