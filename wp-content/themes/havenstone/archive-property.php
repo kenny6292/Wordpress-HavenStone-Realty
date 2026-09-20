@@ -1,5 +1,5 @@
 <?php get_header(); ?>
-<main class="site-container section">
+<main id="main-content" class="site-container section">
 <header class="archive-header">
 <p class="eyebrow">HavenStone Realty</p>
 <h1>Properties</h1>
