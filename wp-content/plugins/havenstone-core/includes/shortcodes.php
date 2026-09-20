@@ -57,3 +57,17 @@ function havenstone_handle_enquiry(): void {
     if($id) update_post_meta($id,'_havenstone_email',$email);
 }
 add_action('init','havenstone_handle_enquiry');
+
+function havenstone_viewing_form_shortcode(): string {
+ ob_start(); ?><form class="havenstone-viewing-form" method="post"><?php wp_nonce_field('havenstone_viewing','havenstone_viewing_nonce'); ?><input type="hidden" name="havenstone_viewing_action" value="1"><input type="hidden" name="property_id" value="<?php echo esc_attr(get_the_ID()); ?>"><p><label>Name<input required name="name"></label></p><p><label>Email<input required type="email" name="email"></label></p><p><label>Phone<input name="phone"></label></p><p><label>Preferred date<input required type="date" name="date"></label></p><p><label>Preferred time<input required type="time" name="time"></label></p><p><label>Notes<textarea name="notes"></textarea></label></p><button type="submit">Request viewing</button></form><?php return (string)ob_get_clean();
+}
+add_shortcode('havenstone_viewing_form','havenstone_viewing_form_shortcode');
+function havenstone_handle_viewing_request(): void {
+ if(empty($_POST['havenstone_viewing_action']))return;
+ if(empty($_POST['havenstone_viewing_nonce'])||!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['havenstone_viewing_nonce'])),'havenstone_viewing'))return;
+ $name=sanitize_text_field(wp_unslash($_POST['name']??''));$email=sanitize_email(wp_unslash($_POST['email']??''));$phone=sanitize_text_field(wp_unslash($_POST['phone']??''));$date=sanitize_text_field(wp_unslash($_POST['date']??''));$time=sanitize_text_field(wp_unslash($_POST['time']??''));$notes=sanitize_textarea_field(wp_unslash($_POST['notes']??''));$property_id=absint($_POST['property_id']??0);
+ if(!$name||!is_email($email)||!$date||!$time)return;
+ $id=wp_insert_post(['post_type'=>'viewing_request','post_status'=>'private','post_title'=>sprintf('%s — %s',$name,$property_id?get_the_title($property_id):'Viewing request'),'post_content'=>$notes]);
+ if($id){foreach(['email'=>$email,'phone'=>$phone,'date'=>$date,'time'=>$time,'property_id'=>$property_id] as $k=>$v)update_post_meta($id,'_havenstone_'.$k,$v);}
+}
+add_action('init','havenstone_handle_viewing_request');
