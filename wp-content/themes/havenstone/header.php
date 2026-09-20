@@ -11,7 +11,13 @@
 <div class="site-container">
 <a class="site-logo" href="<?php echo esc_url(home_url('/')); ?>"><?php bloginfo('name'); ?></a>
 <nav aria-label="<?php esc_attr_e('Primary navigation', 'havenstone'); ?>">
-<?php wp_nav_menu(['theme_location'=>'primary','fallback_cb'=>false]); ?>
+<?php
+wp_nav_menu([
+    'theme_location' => 'primary',
+    'fallback_cb' => 'havenstone_fallback_menu',
+    'container' => false,
+]);
+?>
 </nav>
 </div>
 </header>
