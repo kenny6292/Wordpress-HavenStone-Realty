@@ -16,3 +16,16 @@ require_once HAVENSTONE_CORE_PATH.'includes/query.php';
 require_once HAVENSTONE_CORE_PATH.'includes/shortcodes.php';
 require_once HAVENSTONE_CORE_PATH.'includes/agent-meta.php';
 require_once HAVENSTONE_CORE_PATH.'includes/admin.php';
+require_once HAVENSTONE_CORE_PATH.'includes/security.php';
+
+register_activation_hook(__FILE__, 'havenstone_core_activate');
+function havenstone_core_activate() {
+    havenstone_register_post_types();
+    havenstone_register_taxonomies();
+    flush_rewrite_rules();
+}
+
+register_deactivation_hook(__FILE__, 'havenstone_core_deactivate');
+function havenstone_core_deactivate() {
+    flush_rewrite_rules();
+}
