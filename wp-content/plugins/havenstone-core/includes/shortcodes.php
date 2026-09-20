@@ -91,3 +91,42 @@ function havenstone_handle_viewing_request(): void {
  }
 }
 add_action('init','havenstone_handle_viewing_request');
+
+
+function havenstone_handle_property_request(): void {
+    if (empty($_POST['havenstone_request_property'])) return;
+    if (empty($_POST['havenstone_request_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['havenstone_request_nonce'])), 'havenstone_request_property')) return;
+
+    $name=sanitize_text_field(wp_unslash($_POST['name']??''));
+    $email=sanitize_email(wp_unslash($_POST['email']??''));
+    $phone=sanitize_text_field(wp_unslash($_POST['phone']??''));
+    $type=sanitize_text_field(wp_unslash($_POST['property_type']??''));
+    $location=sanitize_text_field(wp_unslash($_POST['location']??''));
+    $min_price=absint($_POST['min_price']??0);
+    $max_price=absint($_POST['max_price']??0);
+    $bedrooms=absint($_POST['bedrooms']??0);
+    $bathrooms=absint($_POST['bathrooms']??0);
+    $requirements=sanitize_textarea_field(wp_unslash($_POST['requirements']??''));
+    if(!$name || !is_email($email) || !$requirements) return;
+
+    $content=sprintf("Property type: %s\nLocation: %s\nBudget: %s - %s\nBedrooms: %s\nBathrooms: %s\n\nRequirements:\n%s",
+        $type ?: 'Any', $location ?: 'Any', $min_price ? number_format_i18n($min_price) : 'Any',
+        $max_price ? number_format_i18n($max_price) : 'Any', $bedrooms ?: 'Any', $bathrooms ?: 'Any', $requirements);
+
+    $id=wp_insert_post(['post_type'=>'enquiry','post_status'=>'private','post_title'=>$name.' — Property request','post_content'=>$content]);
+    if(!$id) return;
+    foreach(['email'=>$email,'phone'=>$phone,'request_type'=>'property_request','property_type'=>$type,'location'=>$location,'min_price'=>$min_price,'max_price'=>$max_price,'bedrooms'=>$bedrooms,'bathrooms'=>$bathrooms] as $k=>$v) update_post_meta($id,'_havenstone_'.$k,$v);
+    update_post_meta($id,'_havenstone_lead_status','new');
+
+    $html='<h2>New HavenStone Realty property request</h2>'.
+        '<p><strong>Name:</strong> '.esc_html($name).'</p>'.
+        '<p><strong>Email:</strong> '.esc_html($email).'</p>'.
+        '<p><strong>Phone:</strong> '.esc_html($phone).'</p>'.
+        '<p><strong>Property type:</strong> '.esc_html($type ?: 'Any').'</p>'.
+        '<p><strong>Location:</strong> '.esc_html($location ?: 'Any').'</p>'.
+        '<p><strong>Budget:</strong> '.esc_html(($min_price ? number_format_i18n($min_price) : 'Any').' - '.($max_price ? number_format_i18n($max_price) : 'Any')).'</p>'.
+        '<p><strong>Bedrooms:</strong> '.esc_html($bedrooms ?: 'Any').' &nbsp; <strong>Bathrooms:</strong> '.esc_html($bathrooms ?: 'Any').'</p>'.
+        '<p><strong>Requirements:</strong><br>'.nl2br(esc_html($requirements)).'</p>';
+    havenstone_send_notification('New property request — '.$name,$html,$email);
+}
+add_action('init','havenstone_handle_property_request');
