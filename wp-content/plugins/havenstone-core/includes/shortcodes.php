@@ -90,6 +90,7 @@ function havenstone_form_rate_limited(string $key, string $email): bool {
 
 function havenstone_handle_enquiry(): void {
     if(empty($_POST['havenstone_enquiry_action'])) return;
+    if (!havenstone_validate_public_request()) return;
     if(empty($_POST['havenstone_enquiry_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['havenstone_enquiry_nonce'])),'havenstone_enquiry')) return;
     $name=sanitize_text_field(wp_unslash($_POST['name']??'')); $email=sanitize_email(wp_unslash($_POST['email']??'')); $phone=sanitize_text_field(wp_unslash($_POST['phone']??'')); $message=sanitize_textarea_field(wp_unslash($_POST['message']??'')); $property_id=absint($_POST['property_id']??0);
     if(!$name || !is_email($email) || !$message) return;
@@ -116,6 +117,7 @@ add_shortcode('havenstone_viewing_form','havenstone_viewing_form_shortcode');
 
 function havenstone_handle_viewing_request(): void {
  if(empty($_POST['havenstone_viewing_action']))return;
+ if (!havenstone_validate_public_request()) return;
  if(empty($_POST['havenstone_viewing_nonce'])||!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['havenstone_viewing_nonce'])),'havenstone_viewing'))return;
  $name=sanitize_text_field(wp_unslash($_POST['name']??''));$email=sanitize_email(wp_unslash($_POST['email']??''));$phone=sanitize_text_field(wp_unslash($_POST['phone']??''));$date=sanitize_text_field(wp_unslash($_POST['date']??''));$time=sanitize_text_field(wp_unslash($_POST['time']??''));$notes=sanitize_textarea_field(wp_unslash($_POST['notes']??''));$property_id=absint($_POST['property_id']??0);
  if(!$name||!is_email($email)||!$date||!$time)return;
@@ -134,6 +136,7 @@ add_action('init','havenstone_handle_viewing_request');
 
 function havenstone_handle_property_request(): void {
     if (empty($_POST['havenstone_request_property'])) return;
+    if (!havenstone_validate_public_request()) return;
     if (empty($_POST['havenstone_request_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['havenstone_request_nonce'])), 'havenstone_request_property')) return;
 
     $name=sanitize_text_field(wp_unslash($_POST['name']??''));
