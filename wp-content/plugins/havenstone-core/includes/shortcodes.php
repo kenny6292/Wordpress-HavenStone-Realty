@@ -53,9 +53,39 @@ function havenstone_send_notification(string $subject, string $html, string $rep
     $to = get_option('admin_email');
     $from = apply_filters('havenstone_notification_from', get_option('admin_email'));
     if (!$to || !$from) return false;
+
+    // Use Resend when production credentials are configured; retain wp_mail as a safe fallback.
+    $api_key = defined('HAVENSTONE_RESEND_API_KEY') ? HAVENSTONE_RESEND_API_KEY : getenv('RESEND_API_KEY');
+    $resend_from = defined('HAVENSTONE_RESEND_FROM') ? HAVENSTONE_RESEND_FROM : getenv('HAVENSTONE_RESEND_FROM');
+    if ($api_key && $resend_from && function_exists('wp_remote_post')) {
+        $payload = ['from' => $resend_from, 'to' => [$to], 'subject' => $subject, 'html' => $html];
+        if ($reply_to && is_email($reply_to)) $payload['reply_to'] = [$reply_to];
+        $response = wp_remote_post('https://api.resend.com/emails', [
+            'timeout' => 15,
+            'headers' => ['Authorization' => 'Bearer ' . $api_key, 'Content-Type' => 'application/json'],
+            'body' => wp_json_encode($payload),
+        ]);
+        if (!is_wp_error($response) && wp_remote_retrieve_response_code($response) >= 200 && wp_remote_retrieve_response_code($response) < 300) return true;
+    }
+
     $headers = ['Content-Type: text/html; charset=UTF-8', 'From: '.$from];
     if ($reply_to && is_email($reply_to)) $headers[] = 'Reply-To: '.$reply_to;
     return (bool) wp_mail($to, $subject, $html, $headers);
+}
+
+function havenstone_redirect_after_form(string $status): void {
+    $target = wp_get_referer();
+    if (!$target) $target = home_url('/');
+    $target = remove_query_arg(['havenstone_status','_wpnonce'], $target);
+    wp_safe_redirect(add_query_arg('havenstone_status', $status, $target));
+    exit;
+}
+
+function havenstone_form_rate_limited(string $key, string $email): bool {
+    $bucket = 'havenstone_' . md5($key . '|' . strtolower($email) . '|' . ($_SERVER['REMOTE_ADDR'] ?? ''));
+    if (get_transient($bucket)) return true;
+    set_transient($bucket, 1, MINUTE_IN_SECONDS);
+    return false;
 }
 
 function havenstone_handle_enquiry(): void {
@@ -64,6 +94,7 @@ function havenstone_handle_enquiry(): void {
     $name=sanitize_text_field(wp_unslash($_POST['name']??'')); $email=sanitize_email(wp_unslash($_POST['email']??'')); $phone=sanitize_text_field(wp_unslash($_POST['phone']??'')); $message=sanitize_textarea_field(wp_unslash($_POST['message']??'')); $property_id=absint($_POST['property_id']??0);
     if(!$name || !is_email($email) || !$message) return;
     if (!empty($_POST['website'])) return;
+    if (havenstone_form_rate_limited('enquiry', $email)) return;
     $id=wp_insert_post(['post_type'=>'enquiry','post_status'=>'private','post_title'=>sprintf('%s — %s',$name,$property_id?get_the_title($property_id):'General enquiry'),'post_content'=>$message]);
     if($id && $phone) update_post_meta($id,'_havenstone_phone',$phone);
     if($id) update_post_meta($id,'_havenstone_email',$email);
@@ -72,6 +103,7 @@ function havenstone_handle_enquiry(): void {
         $property_title=$property_id ? get_the_title($property_id) : 'General enquiry';
         $html='<h2>New HavenStone Realty enquiry</h2><p><strong>Name:</strong> '.esc_html($name).'</p><p><strong>Email:</strong> '.esc_html($email).'</p><p><strong>Phone:</strong> '.esc_html($phone).'</p><p><strong>Property:</strong> '.esc_html($property_title).'</p><p><strong>Message:</strong><br>'.nl2br(esc_html($message)).'</p>';
         havenstone_send_notification('New property enquiry — '.$property_title,$html,$email);
+        havenstone_redirect_after_form('enquiry_sent');
     }
 }
 add_action('init','havenstone_handle_enquiry');
@@ -88,11 +120,13 @@ function havenstone_handle_viewing_request(): void {
  $name=sanitize_text_field(wp_unslash($_POST['name']??''));$email=sanitize_email(wp_unslash($_POST['email']??''));$phone=sanitize_text_field(wp_unslash($_POST['phone']??''));$date=sanitize_text_field(wp_unslash($_POST['date']??''));$time=sanitize_text_field(wp_unslash($_POST['time']??''));$notes=sanitize_textarea_field(wp_unslash($_POST['notes']??''));$property_id=absint($_POST['property_id']??0);
  if(!$name||!is_email($email)||!$date||!$time)return;
  if (!empty($_POST['website'])) return;
+ if (havenstone_form_rate_limited('viewing', $email)) return;
  $id=wp_insert_post(['post_type'=>'viewing_request','post_status'=>'private','post_title'=>sprintf('%s — %s',$name,$property_id?get_the_title($property_id):'Viewing request'),'post_content'=>$notes]);
  if($id){foreach(['email'=>$email,'phone'=>$phone,'date'=>$date,'time'=>$time,'property_id'=>$property_id] as $k=>$v)update_post_meta($id,'_havenstone_'.$k,$v); update_post_meta($id,'_havenstone_lead_status','new');
    $property_title=$property_id ? get_the_title($property_id) : 'Viewing request';
    $html='<h2>New HavenStone Realty viewing request</h2><p><strong>Name:</strong> '.esc_html($name).'</p><p><strong>Email:</strong> '.esc_html($email).'</p><p><strong>Phone:</strong> '.esc_html($phone).'</p><p><strong>Property:</strong> '.esc_html($property_title).'</p><p><strong>Preferred date:</strong> '.esc_html($date).'</p><p><strong>Preferred time:</strong> '.esc_html($time).'</p><p><strong>Notes:</strong><br>'.nl2br(esc_html($notes)).'</p>';
    havenstone_send_notification('New viewing request — '.$property_title,$html,$email);
+   havenstone_redirect_after_form('viewing_sent');
  }
 }
 add_action('init','havenstone_handle_viewing_request');
@@ -114,6 +148,7 @@ function havenstone_handle_property_request(): void {
     $requirements=sanitize_textarea_field(wp_unslash($_POST['requirements']??''));
     if(!$name || !is_email($email) || !$requirements) return;
     if (!empty($_POST['website'])) return;
+    if (havenstone_form_rate_limited('property_request', $email)) return;
 
     $content=sprintf("Property type: %s\nLocation: %s\nBudget: %s - %s\nBedrooms: %s\nBathrooms: %s\n\nRequirements:\n%s",
         $type ?: 'Any', $location ?: 'Any', $min_price ? number_format_i18n($min_price) : 'Any',
@@ -134,5 +169,10 @@ function havenstone_handle_property_request(): void {
         '<p><strong>Bedrooms:</strong> '.esc_html($bedrooms ?: 'Any').' &nbsp; <strong>Bathrooms:</strong> '.esc_html($bathrooms ?: 'Any').'</p>'.
         '<p><strong>Requirements:</strong><br>'.nl2br(esc_html($requirements)).'</p>';
     havenstone_send_notification('New property request — '.$name,$html,$email);
+    $target = wp_get_referer();
+    if (!$target) $target = home_url('/');
+    $target = remove_query_arg(['havenstone_status','_wpnonce'], $target);
+    wp_safe_redirect(add_query_arg('havenstone_status', 'property_request_sent', $target));
+    exit;
 }
 add_action('init','havenstone_handle_property_request');
