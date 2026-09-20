@@ -29,7 +29,7 @@ function havenstone_render_property_details(WP_Post $post): void {
     $gallery = get_post_meta($post->ID, '_havenstone_gallery', true);
     $amenities = get_post_meta($post->ID, '_havenstone_amenities', true);
     echo '<p><label for="havenstone_gallery"><strong>' . esc_html__('Gallery Image IDs', 'havenstone') . '</strong></label>';
-    echo '<input class="widefat" id="havenstone_gallery" name="havenstone_gallery" value="' . esc_attr(is_array($gallery) ? implode(',', $gallery) : $gallery) . '">';
+    echo '<div style="display:flex;gap:8px;align-items:center"><input class="widefat" id="havenstone_gallery" name="havenstone_gallery" value="' . esc_attr(is_array($gallery) ? implode(',', $gallery) : $gallery) . '"><button type="button" class="button" id="havenstone_gallery_select">Select images</button></div>';
     echo '<small>' . esc_html__('Comma-separated WordPress Media Library image IDs. The first image can remain the featured image.', 'havenstone') . '</small></p>';
 
     echo '<p><label for="havenstone_amenities"><strong>' . esc_html__('Amenities', 'havenstone') . '</strong></label>';
