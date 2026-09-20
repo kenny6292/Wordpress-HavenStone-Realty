@@ -1,5 +1,5 @@
 <?php get_header(); while(have_posts()):the_post(); $id=get_the_ID(); $role=get_post_meta($id,'_havenstone_role',true); $phone=get_post_meta($id,'_havenstone_phone',true); $wa=get_post_meta($id,'_havenstone_whatsapp',true); $email=get_post_meta($id,'_havenstone_email',true); $license=get_post_meta($id,'_havenstone_license',true); ?>
-<main class="site-container section">
+<main id="main-content" class="site-container section">
 <a class="back-link" href="<?php echo esc_url(get_post_type_archive_link('agent')); ?>">← All agents</a>
 <div class="agent-profile">
 <div><?php if(has_post_thumbnail()) the_post_thumbnail('large',['loading'=>'eager']); ?></div>
