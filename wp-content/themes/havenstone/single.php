@@ -1,5 +1,5 @@
 <?php get_header(); ?>
-<main class="site-container section havenstone-page">
+<main id="main-content" class="site-container section havenstone-page">
 <?php while(have_posts()): the_post(); ?>
 <article <?php post_class('single-post'); ?>>
 <header class="page-header"><p class="eyebrow"><?php echo esc_html(get_the_date()); ?></p><h1><?php the_title(); ?></h1></header>
