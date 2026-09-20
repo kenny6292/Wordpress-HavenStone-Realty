@@ -1,0 +1,6 @@
+<?php get_header(); ?>
+<main class="havenstone-page">
+<section class="page-hero"><div class="site-container"><p class="eyebrow">HavenStone Journal</p><h1>Property insights, guides and market notes.</h1><p>Useful information for buyers, renters, owners and investors.</p></div></section>
+<section class="site-container section"><?php $q=new WP_Query(['post_type'=>'post','post_status'=>'publish','posts_per_page'=>9]); if($q->have_posts()): ?><div class="post-grid"><?php while($q->have_posts()):$q->the_post(); ?><article class="post-card"><a href="<?php the_permalink(); ?>"><?php if(has_post_thumbnail()) the_post_thumbnail('large'); ?><div class="post-card__body"><p class="eyebrow"><?php echo esc_html(get_the_date()); ?></p><h2><?php the_title(); ?></h2><p><?php echo esc_html(wp_trim_words(get_the_excerpt(),24)); ?></p><span class="text-link">Read article →</span></div></a></article><?php endwhile; ?></div><?php wp_reset_postdata(); else: ?><div class="property-empty"><h2>Insights coming soon.</h2><p>New HavenStone property guides and market articles will appear here.</p></div><?php endif; ?></section>
+</main>
+<?php get_footer(); ?>
