@@ -75,3 +75,12 @@ function havenstone_property_admin_column_content(string $column,int $post_id): 
     if ($column==='havenstone_featured') echo get_post_meta($post_id,'_havenstone_featured',true)==='1' ? 'Yes' : '—';
 }
 add_action('manage_property_posts_custom_column','havenstone_property_admin_column_content',10,2);
+
+function havenstone_admin_property_assets(string $hook): void {
+    if (!in_array($hook, ['post.php','post-new.php'], true)) return;
+    $screen = get_current_screen();
+    if (!$screen || $screen->post_type !== 'property') return;
+    wp_enqueue_media();
+    wp_enqueue_script('havenstone-property-admin', plugins_url('../assets/js/admin-property.js', __FILE__), ['jquery'], HAVENSTONE_CORE_VERSION, true);
+}
+add_action('admin_enqueue_scripts', 'havenstone_admin_property_assets');
