@@ -51,7 +51,7 @@ function havenstone_output_seo_meta(): void {
 
     echo '<meta name="description" content="' . esc_attr($description) . '">' . "
 ";
-    echo '<link rel="canonical" href="' . esc_url(get_canonical_url()) . '">' . "
+    echo '<link rel="canonical" href="' . esc_url(havenstone_canonical_url()) . '">' . "
 ";
     echo '<meta property="og:type" content="' . esc_attr(is_singular() ? 'article' : 'website') . '">' . "
 ";
