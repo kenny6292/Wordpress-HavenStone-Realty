@@ -1,0 +1,28 @@
+# WordPress core
+/wp-admin/
+/wp-includes/
+/wp-*.php
+/xmlrpc.php
+
+# Runtime/content
+/wp-content/uploads/
+/wp-content/cache/
+/wp-content/upgrade/
+/wp-content/backup*/
+/wp-content/languages/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+
+# Dependencies
+node_modules/
+vendor/
