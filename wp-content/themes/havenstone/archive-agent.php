@@ -1,0 +1,1 @@
+<?php get_header(); ?><main class="site-container section"><header class="archive-header"><p class="eyebrow">HavenStone Realty</p><h1>Our agents</h1><p>Meet the property professionals available to help with your next move.</p></header><?php echo do_shortcode('[havenstone_agents]'); ?></main><?php get_footer(); ?>
