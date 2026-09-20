@@ -14,3 +14,5 @@ require_once HAVENSTONE_CORE_PATH.'includes/taxonomies.php';
 require_once HAVENSTONE_CORE_PATH.'includes/property-meta.php';
 require_once HAVENSTONE_CORE_PATH.'includes/query.php';
 require_once HAVENSTONE_CORE_PATH.'includes/shortcodes.php';
+require_once HAVENSTONE_CORE_PATH.'includes/agent-meta.php';
+require_once HAVENSTONE_CORE_PATH.'includes/admin.php';
