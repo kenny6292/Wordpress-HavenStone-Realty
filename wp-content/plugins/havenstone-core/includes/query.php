@@ -20,12 +20,29 @@ function havenstone_property_query(array $args = []): WP_Query {
             ];
         }
     }
-    if ($tax_query) $args['tax_query'] = array_merge(['relation' => 'AND'], $tax_query);
+    if ($tax_query) {
+        $args['tax_query'] = array_merge(['relation' => 'AND'], $tax_query);
+    }
 
     if (!empty($_GET['min_price']) || !empty($_GET['max_price'])) {
         $args['meta_query'] = ['relation' => 'AND'];
-        if (!empty($_GET['min_price'])) $args['meta_query'][] = ['key'=>'_havenstone_price','value'=>(float)$_GET['min_price'],'type'=>'NUMERIC','compare'=>'>='];
-        if (!empty($_GET['max_price'])) $args['meta_query'][] = ['key'=>'_havenstone_price','value'=>(float)$_GET['max_price'],'type'=>'NUMERIC','compare'=>'<='];
+        if (!empty($_GET['min_price'])) {
+            $args['meta_query'][] = [
+                'key' => '_havenstone_price',
+                'value' => (float) sanitize_text_field(wp_unslash($_GET['min_price'])),
+                'type' => 'NUMERIC',
+                'compare' => '>=',
+            ];
+        }
+        if (!empty($_GET['max_price'])) {
+            $args['meta_query'][] = [
+                'key' => '_havenstone_price',
+                'value' => (float) sanitize_text_field(wp_unslash($_GET['max_price'])),
+                'type' => 'NUMERIC',
+                'compare' => '<=',
+            ];
+        }
     }
+
     return new WP_Query($args);
 }
