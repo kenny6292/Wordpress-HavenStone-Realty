@@ -1,16 +1,8 @@
 <?php get_header(); ?>
 <main>
-<section class="hero">
-<div class="site-container">
-<p class="eyebrow">Real Estate • Homes • Land • Investment</p>
-<h1>Find a place worth calling home.</h1>
-<p>Discover carefully presented properties for sale and rent, with professional guidance from search to closing.</p>
-<a class="button" href="<?php echo esc_url(home_url('/properties/')); ?>">Explore Properties</a>
-</div>
-</section>
-<section class="site-container section">
-<h2>Featured Properties</h2>
-<p>Featured listings will be powered by the HavenStone property system.</p>
-</section>
-</main>
-<?php get_footer(); ?>
+<section class="hero"><div class="site-container"><p class="eyebrow">HavenStone Realty • Homes • Land • Investment</p><h1>Find a place worth calling home.</h1><p>Explore professionally presented homes, land and investment properties with guidance from search through closing.</p><a class="button" href="<?php echo esc_url(home_url('/properties/')); ?>">Explore Properties</a> <a class="button button--outline" href="<?php echo esc_url(home_url('/contact/')); ?>">Talk to HavenStone</a></div></section>
+<section class="site-container section"><div class="section-heading"><p class="eyebrow">Discover</p><h2>Search the right property</h2><p>Filter listings by type, location and budget.</p></div><form class="property-filters" method="get" action="<?php echo esc_url(get_post_type_archive_link('property')); ?>"><label>Property type<select name="property_type"><option value="">All types</option><?php foreach(get_terms(['taxonomy'=>'property_type','hide_empty'=>true]) as $t): ?><option value="<?php echo esc_attr($t->slug); ?>"><?php echo esc_html($t->name); ?></option><?php endforeach; ?></select></label><label>Location<select name="property_location"><option value="">All locations</option><?php foreach(get_terms(['taxonomy'=>'property_location','hide_empty'=>true]) as $t): ?><option value="<?php echo esc_attr($t->slug); ?>"><?php echo esc_html($t->name); ?></option><?php endforeach; ?></select></label><label>Min price<input type="number" name="min_price" min="0"></label><label>Max price<input type="number" name="max_price" min="0"></label><button type="submit">Search</button></form></section>
+<section class="site-container section"><p class="eyebrow">Featured</p><h2>Featured properties</h2><?php $q=new WP_Query(['post_type'=>'property','post_status'=>'publish','posts_per_page'=>6,'meta_key'=>'_havenstone_featured','meta_value'=>'1']); echo '<div class="property-grid">'; while($q->have_posts()):$q->the_post(); echo havenstone_property_card(get_post()); endwhile; wp_reset_postdata(); echo '</div>'; ?><p><a class="text-link" href="<?php echo esc_url(home_url('/properties/')); ?>">View all properties →</a></p></section>
+<section class="site-container section services-grid"><div><p class="eyebrow">Our services</p><h2>Real estate support beyond the listing.</h2></div><div class="service-item"><h3>Property Sales</h3><p>Guidance for buyers and sellers from discovery to completion.</p></div><div class="service-item"><h3>Rentals</h3><p>Find residential rental opportunities matched to your needs.</p></div><div class="service-item"><h3>Property Management</h3><p>Practical support for owners managing valuable assets.</p></div><div class="service-item"><h3>Investment</h3><p>Explore land and property opportunities for long-term goals.</p></div></section>
+<section class="cta section"><div class="site-container"><p class="eyebrow">Ready when you are</p><h2>Tell us what you are looking for.</h2><p>Share your requirements and the HavenStone team can help narrow the search.</p><a class="button" href="<?php echo esc_url(home_url('/contact/')); ?>">Contact HavenStone</a></div></section>
+</main><?php get_footer(); ?>
