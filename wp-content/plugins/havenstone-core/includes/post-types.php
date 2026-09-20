@@ -20,7 +20,7 @@ function havenstone_register_post_types(): void {
         'public' => true,
         'show_in_rest' => true,
         'menu_icon' => 'dashicons-businessperson',
-        'supports' => ['title','editor','thumbnail'],
+        'supports' => ['title','editor','thumbnail','excerpt'],
         'has_archive' => true,
         'rewrite' => ['slug' => 'agents'],
     ]);
