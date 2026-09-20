@@ -1,5 +1,5 @@
 <?php get_header(); ?>
-<main>
+<main id="main-content">
 <section class="hero"><div class="site-container"><p class="eyebrow">HavenStone Realty • Homes • Land • Investment</p><h1>Find a place worth calling home.</h1><p>Explore professionally presented homes, land and investment properties with guidance from search through closing.</p><a class="button" href="<?php echo esc_url(home_url('/properties/')); ?>">Explore Properties</a> <a class="button button--outline" href="<?php echo esc_url(home_url('/contact/')); ?>">Talk to HavenStone</a></div></section>
 <section class="site-container section"><div class="section-heading"><p class="eyebrow">Discover</p><h2>Search the right property</h2><p>Search by keyword, type, location, budget, bedrooms and bathrooms, then sort the results to match your priorities.</p></div>
 <form class="property-filters property-filters--advanced" method="get" action="<?php echo esc_url(get_post_type_archive_link('property')); ?>">
