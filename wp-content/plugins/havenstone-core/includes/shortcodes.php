@@ -91,4 +91,3 @@ function havenstone_handle_viewing_request(): void {
  }
 }
 add_action('init','havenstone_handle_viewing_request');
-_request');
