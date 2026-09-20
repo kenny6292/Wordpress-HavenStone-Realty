@@ -1,0 +1,8 @@
+<?php get_header(); ?>
+<main class="havenstone-page">
+<section class="page-hero"><div class="site-container"><p class="eyebrow">Our services</p><h1>Property services for buyers, owners and investors.</h1><p>From finding the right opportunity to managing an existing asset, HavenStone provides practical real estate support.</p></div></section>
+<section class="site-container section service-list">
+<?php $services=[['Property Sales','Support for buyers and sellers through property discovery, enquiries, negotiation and completion.'],['Property Rentals','Rental search and landlord support focused on suitable properties and clear communication.'],['Property Management','Ongoing coordination for owners who need practical support managing their property.'],['Land & Development','Land opportunities and development-focused property guidance for individuals and investors.'],['Real Estate Investment','Property and land opportunities for investors evaluating potential long-term holdings.'],['Property Valuation','Property value guidance to help owners understand an asset before a sale, rental or investment decision.']]; foreach($services as $service): ?><article class="service-panel"><p class="eyebrow">HavenStone service</p><h2><?php echo esc_html($service[0]); ?></h2><p><?php echo esc_html($service[1]); ?></p><a class="text-link" href="<?php echo esc_url(home_url('/contact/')); ?>">Enquire about this service →</a></article><?php endforeach; ?>
+</section>
+</main>
+<?php get_footer(); ?>
