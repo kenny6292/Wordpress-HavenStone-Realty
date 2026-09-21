@@ -1,0 +1,2 @@
+import { sql } from "@/lib/db";
+export async function GET(){const rows=await sql`select id,property_code,title,slug,description,property_type,listing_type,status,price_minor,currency,location,bedrooms,bathrooms,size_sqm,image_url,featured from properties where status in ('available','pending') order by featured desc,created_at desc`;return Response.json(rows);}
