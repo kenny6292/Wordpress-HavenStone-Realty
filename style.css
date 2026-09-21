@@ -457,3 +457,14 @@ p{color:var(--hs-muted)}
   .visual-card,.visual-card img{min-height:260px}
 }
 
+
+
+.site-header .site-container{position:relative}
+.site-header__cta{margin-left:8px;white-space:nowrap}
+@media(max-width:900px){
+  .site-header__cta{margin-left:auto;margin-top:-2px}
+}
+@media(max-width:600px){
+  .site-header__bar{width:100%}
+  .site-header__cta{display:none}
+}
