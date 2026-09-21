@@ -1,0 +1,6 @@
+<?php get_header(); ?>
+<main id="main-content" class="havenstone-page">
+<section class="page-hero"><div class="site-container"><p class="eyebrow">Contact HavenStone Realty</p><h1>Let’s discuss the property you need.</h1><p>Tell us whether you are buying, renting, selling, investing or looking for property management support.</p></div></section>
+<section class="site-container section contact-layout"><div class="contact-panel"><p class="eyebrow">Enquiries</p><h2>Start with the details you already have.</h2><?php echo do_shortcode('[havenstone_enquiry_form]'); ?></div><aside class="contact-panel"><h2>Other ways to connect</h2><p>For a property-specific question, use the enquiry form on the listing. For a viewing, submit a viewing request from the property page.</p><a class="button" href="<?php echo esc_url(home_url('/properties/')); ?>">Browse properties</a><a class="button button--outline" href="<?php echo esc_url(home_url('/request-a-property/')); ?>">Request a property</a></aside></section>
+</main>
+<?php get_footer(); ?>
