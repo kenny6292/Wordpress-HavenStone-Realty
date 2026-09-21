@@ -26,5 +26,6 @@ wp_nav_menu([
 ]);
 ?>
 </nav>
+<a class="site-header__cta button button--small" href="<?php echo esc_url(home_url('/request-a-property/')); ?>">Request a Property</a>
 </div>
 </header>
