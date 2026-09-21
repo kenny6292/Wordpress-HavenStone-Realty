@@ -161,3 +161,13 @@ button,.button,a{touch-action:manipulation}
 @media(max-width:380px){
   .site-nav ul{grid-template-columns:1fr}
 }
+
+/* Three-line navigation bar */
+.site-menu-toggle{position:relative;display:none;width:46px;height:46px;padding:0;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;align-items:center;justify-content:center;flex-direction:column;gap:5px}
+.site-menu-toggle span{width:24px;height:2px;display:block;background:currentColor;border-radius:2px;transition:transform .2s ease,opacity .2s ease}
+@media(max-width:600px){
+  .site-menu-toggle{display:flex}
+  .site-menu-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .site-menu-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
+  .site-menu-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+}
