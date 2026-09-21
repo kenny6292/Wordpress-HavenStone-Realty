@@ -1,1 +1,41 @@
-import{redirect,notFound}from"next/navigation";import{requireAdmin}from"@/lib/auth";import{sql}from"@/lib/db";import PropertyForm from"@/components/admin/PropertyForm";export default async function EditProperty({params}:{params:Promise<{id:string}>}){if(!(await requireAdmin()))redirect("/admin/login");const{id}=await params;const rows=await sql`select id,title,location,price_minor,property_type,listing_type,status,bedrooms,bathrooms,size_sqm,description,image_url,featured,agent_name,agent_phone from properties where id=${id} limit 1`;if(!rows[0])notFound();return <main><section className="page-hero"><div className="container"><div className="eyebrow">Management</div><h1>Edit property</h1><p className="muted">Update this HavenStone listing.</p></div></section><section className="section"><div className="container"><PropertyForm property={rows[0] as any}/></div></section></main>}
+import { redirect, notFound } from "next/navigation";
+import { requireAdmin } from "@/lib/auth";
+import { sql } from "@/lib/db";
+import PropertyForm from "@/components/admin/PropertyForm";
+
+export default async function EditProperty({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  if (!(await requireAdmin())) redirect("/admin/login");
+
+  const { id } = await params;
+  const rows = await sql`
+    select id, title, location, price_minor, property_type, listing_type,
+           status, bedrooms, bathrooms, size_sqm, description, image_url,
+           featured, amenities, images, agent_name, agent_phone
+    from properties
+    where id = ${id}
+    limit 1
+  `;
+
+  if (!rows[0]) notFound();
+
+  return (
+    <main>
+      <section className="page-hero">
+        <div className="container">
+          <div className="eyebrow">Management</div>
+          <h1>Edit property</h1>
+          <p className="muted">Update this HavenStone listing.</p>
+        </div>
+      </section>
+      <section className="section">
+        <div className="container">
+          <PropertyForm property={rows[0] as any} />
+        </div>
+      </section>
+    </main>
+  );
+}
