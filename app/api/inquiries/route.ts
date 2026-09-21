@@ -1,0 +1,2 @@
+import { sql } from "@/lib/db";
+export async function POST(req:Request){try{const b=await req.json();if(!b.full_name||!b.phone||!b.message)return Response.json({error:"Name, phone and message are required."},{status:400});const rows=await sql`insert into property_inquiries(property_id,full_name,email,phone,message) values(${b.property_id||null},${b.full_name},${b.email||null},${b.phone},${b.message}) returning id,status,created_at`;return Response.json(rows[0],{status:201});}catch{return Response.json({error:"Unable to submit enquiry."},{status:500});}}
