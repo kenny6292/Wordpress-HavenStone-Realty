@@ -10,13 +10,19 @@
 <a class="skip-link" href="#main-content">Skip to content</a>
 <header class="site-header">
 <div class="site-container">
+<div class="site-header__bar">
 <a class="site-logo" href="<?php echo esc_url(home_url('/')); ?>"><?php bloginfo('name'); ?></a>
-<nav aria-label="<?php esc_attr_e('Primary navigation', 'havenstone'); ?>">
+<button class="site-menu-toggle" type="button" aria-expanded="false" aria-controls="primary-menu" aria-label="<?php esc_attr_e('Open navigation menu', 'havenstone'); ?>">
+<span></span><span></span><span></span>
+</button>
+</div>
+<nav id="primary-menu" class="site-nav" aria-label="<?php esc_attr_e('Primary navigation', 'havenstone'); ?>">
 <?php
 wp_nav_menu([
     'theme_location' => 'primary',
     'fallback_cb' => 'havenstone_fallback_menu',
     'container' => false,
+    'menu_id' => 'primary-menu-list',
 ]);
 ?>
 </nav>
