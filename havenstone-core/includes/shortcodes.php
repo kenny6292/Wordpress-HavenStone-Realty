@@ -23,9 +23,13 @@ function havenstone_property_card(WP_Post $property): string {
 function havenstone_properties_shortcode(array $atts = []): string {
     $query = havenstone_property_query(wp_parse_args($atts, ['posts_per_page'=>12]));
     ob_start();
-    echo '<div class="property-grid">';
-    while ($query->have_posts()) { $query->the_post(); echo havenstone_property_card(get_post()); }
-    echo '</div>';
+    if ($query->have_posts()) {
+        echo '<div class="property-grid">';
+        while ($query->have_posts()) { $query->the_post(); echo havenstone_property_card(get_post()); }
+        echo '</div>';
+    } else {
+        echo '<div class="property-empty"><h2>Property listings are being prepared.</h2><p>HavenStone Realty is currently updating this section with available homes, land and investment opportunities.</p><a class="button" href="' . esc_url(home_url('/request-a-property/')) . '">Request a property</a></div>';
+    }
     wp_reset_postdata();
     return (string) ob_get_clean();
 }
